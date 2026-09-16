@@ -48,6 +48,11 @@
     th, td { border-bottom: 1px solid #e2e8f0; padding: 12px 10px; text-align: center; font-size: 16px; }
     th { background: #f8fafc; color: #475569; white-space: nowrap; }
     .sign-img { max-height: 50px; object-fit: contain; }
+
+    /* 🌟 全螢幕載入動畫遮罩樣式 */
+    #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; color: white; font-size: 20px; font-weight: bold; }
+    .spinner { border: 6px solid #f3f3f3; border-top: 6px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -117,8 +122,14 @@
   </div>
 </div>
 
+<!-- 🌟 全螢幕載入動畫 HTML -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div id="loading-text">正在查詢學童資料...</div>
+</div>
+
 <script>
-  // ⚠️ 貼上程式碼後，請把下方這段網址換成您的 GAS 網頁應用程式網址！
+  // ⚠️ 請確認這裡的 GAS 網址是否正確
   const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyTbufOyqkkVxTnDbOReNbspnxkUv2chfN9RmmQKF0cEfw3eySM7OEdmV2nn0THsdBMrA/exec";
   
   let currentPin = ""; 
@@ -195,23 +206,42 @@
 
   async function onScanSuccess(decodedText) {
     stopScanner();
-    document.getElementById('search-results').innerHTML = "<div style='color:#0284c7; text-align:center;'>🔄 掃描成功！資料比對中...</div>";
+    
+    // 🌟 顯示全螢幕載入動畫
+    document.getElementById('loading-text').innerText = "🔄 掃描成功！正在查詢學童資料...";
+    document.getElementById('loading-overlay').style.display = "flex";
+
     try {
       const qrData = JSON.parse(decodedText);
       if (qrData._membrId) {
         const res = await apiCall('searchMembrId', { membrId: qrData._membrId });
+        
+        // 🌟 關閉載入動畫
+        document.getElementById('loading-overlay').style.display = "none";
+        
         showResults(res.data);
+      } else {
+        document.getElementById('loading-overlay').style.display = "none";
+        alert("⚠️ 無效的 QR Code 格式");
       }
-    } catch(e) { alert("⚠️ 無效的 QR Code 格式"); document.getElementById('search-results').innerHTML = ""; }
+    } catch(e) {
+      document.getElementById('loading-overlay').style.display = "none";
+      alert("⚠️ 無效的 QR Code 格式");
+    }
   }
 
   async function search() {
     const keyword = document.getElementById('keyword').value.trim();
     if (!keyword) return alert("請輸入關鍵字");
     document.getElementById('keyword').blur();
-    document.getElementById('search-results').innerHTML = "<div style='color:#94a3b8; text-align:center;'>🔍 查詢中...</div>";
+    
+    // 🌟 一般搜尋也加上載入動畫
+    document.getElementById('loading-text').innerText = "🔍 正在搜尋學童...";
+    document.getElementById('loading-overlay').style.display = "flex";
     
     const res = await apiCall('search', { keyword: keyword });
+    
+    document.getElementById('loading-overlay').style.display = "none";
     if(res.success) showResults(res.data);
   }
 
@@ -219,7 +249,7 @@
     const container = document.getElementById('search-results');
     if (!results || results.length === 0) return container.innerHTML = "<div style='color:#e11d48; text-align:center;'>找不到符合的學童</div>";
     
-    if (results.length === 1 && document.getElementById('keyword').value === "") {
+    if (results.length === 1) {
       return selectStudent(JSON.stringify(results[0]));
     }
     
@@ -276,18 +306,25 @@
     if (canvas.toDataURL() === blank.toDataURL()) return alert("⚠️ 請家長先在方框內簽名！");
 
     const base64Image = canvas.toDataURL('image/png');
-    const btn = document.getElementById('submit-btn');
-    btn.innerHTML = "⏳ 儲存中..."; btn.disabled = true;
+    
+    // 🌟 儲存時也顯示載入動畫
+    document.getElementById('loading-text').innerText = "⏳ 正在儲存簽名與紀錄...";
+    document.getElementById('loading-overlay').style.display = "flex";
 
     const res = await apiCall('save', { studentData: selectedStudent, base64Image: base64Image });
+    
+    document.getElementById('loading-overlay').style.display = "none";
     alert(res.message);
     if(res.success) backToSearch();
-    btn.innerHTML = "✅ 確認簽名送出"; btn.disabled = false;
   }
 
   async function fetchRecentRecords() {
-    document.getElementById('list-content').innerHTML = "<div style='padding:20px; text-align:center;'>載入中...</div>";
+    document.getElementById('loading-text').innerText = "📋 載入近期清單...";
+    document.getElementById('loading-overlay').style.display = "flex";
+    
     const res = await apiCall('recent');
+    document.getElementById('loading-overlay').style.display = "none";
+    
     if(res.success) {
       if (res.data.length === 0) return document.getElementById('list-content').innerHTML = "<div style='padding:20px; text-align:center;'>無紀錄。</div>";
       let html = `<table><tr><th>時間</th><th>班級</th><th>姓名</th><th>簽名</th></tr>`;
@@ -300,9 +337,13 @@
   async function fetchReport() {
     const targetDate = document.getElementById('report-date').value;
     if (!targetDate) return alert("請選擇日期");
-    document.getElementById('report-content').innerHTML = "<div style='padding:20px; text-align:center;'>報表產生中...</div>";
+    
+    document.getElementById('loading-text').innerText = "📊 產生報表中...";
+    document.getElementById('loading-overlay').style.display = "flex";
     
     const res = await apiCall('report', { targetDate: targetDate });
+    document.getElementById('loading-overlay').style.display = "none";
+    
     if(res.success) {
       if (res.data.length === 0) return document.getElementById('report-content').innerHTML = "<div style='padding:20px; text-align:center;'>這天沒有紀錄。</div>";
       let html = `<button class="btn btn-secondary" style="margin-bottom:15px;" onclick="window.print()">🖨️ 列印此頁</button>`;
