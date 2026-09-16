@@ -1,343 +1,327 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.3">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <title>超時保育簽名系統</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Helvetica Neue', '微軟正黑體', sans-serif; background: #eef2f5; margin: 0; padding: 10px; color: #333; }
+    .container { max-width: 700px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); display: none; }
+    h1 { text-align: center; color: #2c3e50; font-size: 26px; margin-top: 0; margin-bottom: 25px;}
+    
+    /* 登入畫面專屬 */
+    #login-screen { max-width: 400px; margin: 50px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: center; }
+    #login-screen h2 { color: #2c3e50; margin-bottom: 20px; }
+    #pin-input { width: 100%; padding: 15px; font-size: 24px; text-align: center; letter-spacing: 5px; margin-bottom: 20px; border: 2px solid #cbd5e1; border-radius: 8px; }
+    
+    .nav { display: flex; gap: 10px; margin-bottom: 25px; }
+    .nav button { flex: 1; padding: 15px 5px; font-size: 18px; font-weight: bold; cursor: pointer; border: none; border-radius: 8px; background: #e0e6ed; color: #5c6a79; transition: 0.2s; }
+    .nav button.active { background: #3498db; color: #fff; box-shadow: 0 4px 6px rgba(52,152,219,0.3); }
+    
+    .form-label { font-size: 16px; color: #555; font-weight: bold; margin-bottom: 8px; display: block; }
+    input[type="text"], input[type="date"] { width: 100%; padding: 16px; margin-bottom: 15px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 18px; }
+    
+    .btn { width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .btn-primary { background: #2ecc71; color: white; }
+    .btn-secondary { background: #f1f5f8; color: #64748b; font-size: 18px; }
+    .btn-purple { background: #9b59b6; color: white; margin-bottom: 15px; }
+    
+    .result-card { padding: 18px; background: #fff; border: 2px solid #e2e8f0; margin-bottom: 12px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; color: #334155; }
+    
+    .info-card { background: #f0f9ff; border: 2px solid #bae6fd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 20px; }
+    .info-card .name { font-size: 28px; color: #0f172a; font-weight: bold; margin-bottom: 10px; }
+    .info-card .time { font-size: 22px; color: #e11d48; font-weight: bold; background: #ffe4e6; display: inline-block; padding: 5px 15px; border-radius: 20px; }
+
+    .canvas-container { position: relative; margin-bottom: 15px; }
+    .canvas-hint { position: absolute; top: 10px; left: 10px; color: #94a3b8; font-size: 16px; pointer-events: none; }
+    #signature-pad { border: 2px dashed #94a3b8; border-radius: 10px; background: #fafafa; cursor: crosshair; touch-action: none; width: 100%; height: 260px; }
+    
+    .section { display: none; }
+    .section.active { display: block; }
+    
+    #qr-reader-container { display: none; margin-bottom: 15px; border: 2px solid #cbd5e1; border-radius: 10px; padding: 10px; background: #fff;}
+    #reader { width: 100%; border-radius: 8px; overflow: hidden; }
+
+    .table-responsive { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; }
+    table { width: 100%; min-width: 550px; border-collapse: collapse; background: #fff; }
+    th, td { border-bottom: 1px solid #e2e8f0; padding: 12px 10px; text-align: center; font-size: 16px; }
+    th { background: #f8fafc; color: #475569; white-space: nowrap; }
+    .sign-img { max-height: 50px; object-fit: contain; }
   </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="utf-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;超時保育簽名系統&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://unpkg.com/html5-qrcode" type="text/javascript"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>* { box-sizing: border-box; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body { font-family: 'Helvetica Neue', '微軟正黑體', sans-serif; background: #eef2f5; margin: 0; padding: 10px; color: #333; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.container { max-width: 700px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); display: none; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h1 { text-align: center; color: #2c3e50; font-size: 26px; margin-top: 0; margin-bottom: 25px;}</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* 登入畫面專屬 */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>#login-screen { max-width: 400px; margin: 50px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: center; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>#login-screen h2 { color: #2c3e50; margin-bottom: 20px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>#pin-input { width: 100%; padding: 15px; font-size: 24px; text-align: center; letter-spacing: 5px; margin-bottom: 20px; border: 2px solid #cbd5e1; border-radius: 8px; }</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.nav { display: flex; gap: 10px; margin-bottom: 25px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.nav button { flex: 1; padding: 15px 5px; font-size: 18px; font-weight: bold; cursor: pointer; border: none; border-radius: 8px; background: #e0e6ed; color: #5c6a79; transition: 0.2s; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.nav button.active { background: #3498db; color: #fff; box-shadow: 0 4px 6px rgba(52,152,219,0.3); }</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.form-label { font-size: 16px; color: #555; font-weight: bold; margin-bottom: 8px; display: block; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>input[type="text"], input[type="date"] { width: 100%; padding: 16px; margin-bottom: 15px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 18px; }</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.btn { width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.btn-primary { background: #2ecc71; color: white; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.btn-secondary { background: #f1f5f8; color: #64748b; font-size: 18px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.btn-purple { background: #9b59b6; color: white; margin-bottom: 15px; }</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.result-card { padding: 18px; background: #fff; border: 2px solid #e2e8f0; margin-bottom: 12px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; color: #334155; }</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.info-card { background: #f0f9ff; border: 2px solid #bae6fd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 20px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.info-card .name { font-size: 28px; color: #0f172a; font-weight: bold; margin-bottom: 10px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.info-card .time { font-size: 22px; color: #e11d48; font-weight: bold; background: #ffe4e6; display: inline-block; padding: 5px 15px; border-radius: 20px; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.canvas-container { position: relative; margin-bottom: 15px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.canvas-hint { position: absolute; top: 10px; left: 10px; color: #94a3b8; font-size: 16px; pointer-events: none; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>#signature-pad { border: 2px dashed #94a3b8; border-radius: 10px; background: #fafafa; cursor: crosshair; touch-action: none; width: 100%; height: 260px; }</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.section { display: none; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.section.active { display: block; }</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>#qr-reader-container { display: none; margin-bottom: 15px; border: 2px solid #cbd5e1; border-radius: 10px; padding: 10px; background: #fff;}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>#reader { width: 100%; border-radius: 8px; overflow: hidden; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.table-responsive { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>table { width: 100%; min-width: 550px; border-collapse: collapse; background: #fff; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>th, td { border-bottom: 1px solid #e2e8f0; padding: 12px 10px; text-align: center; font-size: 16px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>th { background: #f8fafc; color: #475569; white-space: nowrap; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.sign-img { max-height: 50px; object-fit: contain; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- 🔒 登入防護畫面 --&gt;</p>
-<p class="p1">&lt;div id="login-screen"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;h2&gt;🔒 系統已鎖定&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;p style="color:#7f8c8d; margin-bottom:20px;"&gt;請輸入教師通關密碼&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;input type="password" id="pin-input" placeholder="****" inputmode="numeric" maxlength="4" onkeypress="if(event.key === 'Enter') verifyPin()"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="btn btn-primary" onclick="verifyPin()"&gt;解鎖系統&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="login-msg" style="color:#e74c3c; margin-top:15px; font-weight:bold;"&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- 📱 系統主畫面 (登入後才會顯示) --&gt;</p>
-<p class="p1">&lt;div class="container" id="app-container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;h1&gt;🕒 超時保育管理系統&lt;/h1&gt;</p>
-<p class="p2"><span class="Apple-converted-space">  </span></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="nav"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="tab-sign" class="active" onclick="switchTab('sign')"&gt;📝 家長簽名&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="tab-list" onclick="switchTab('list'); fetchRecentRecords();"&gt;📋 近期清單&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="tab-report" onclick="switchTab('report')"&gt;🖨️ 列印報表&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="section-sign" class="section active"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="step-search"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;label class="form-label"&gt;📷 即時相機掃描 QR Code&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="start-scan-btn" class="btn btn-purple" onclick="startScanner()"&gt;📷 啟動掃描鏡頭&lt;/button&gt;</p>
-<p class="p2"><span class="Apple-converted-space">      </span></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="qr-reader-container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="reader"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-secondary" style="margin-top:15px;" onclick="stopScanner()"&gt;❌ 關閉相機&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="text-align:center; margin: 25px 0; color: #94a3b8; font-weight:bold;"&gt;--- 或手動輸入 ---&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;label class="form-label"&gt;🔍 查詢學童 (可輸入學號、姓名)&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="display: flex; gap: 10px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;input type="text" id="keyword" placeholder="輸入後按 Enter..." onkeypress="if(event.key === 'Enter') search()" style="margin-bottom:0;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-primary" style="width: 100px;" onclick="search()"&gt;查詢&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="search-results" style="margin-top: 20px;"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="step-signature" style="display:none;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="info-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="name" id="display-name"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="time" id="display-time"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="canvas-container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="canvas-hint"&gt;請在此框內簽名...&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;canvas id="signature-pad"&gt;&lt;/canvas&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-primary" id="submit-btn" onclick="submitSignature()"&gt;✅ 確認簽名送出&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="display: flex; gap: 10px; margin-top: 15px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-secondary" style="width:50%" onclick="clearCanvas()"&gt;🗑️ 清除重簽&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-secondary" style="width:50%" onclick="backToSearch()"&gt;返回上一步&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="section-list" class="section"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="btn btn-secondary" style="margin-bottom: 15px;" onclick="fetchRecentRecords()"&gt;🔄 重新整理&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="table-responsive" id="list-content"&gt;資料載入中...&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="section-report" class="section"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="date" id="report-date" style="margin-bottom: 10px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="btn btn-primary" style="margin-bottom: 20px;" onclick="fetchReport()"&gt;產生報表&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="report-content"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ⚠️【非常重要】請將這裡替換成您剛剛部署 GAS 產生的「網頁應用程式網址」</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyTbufOyqkkVxTnDbOReNbspnxkUv2chfN9RmmQKF0cEfw3eySM7OEdmV2nn0THsdBMrA/exec";</p>
-<p class="p2"><span class="Apple-converted-space">  </span></p>
-<p class="p1"><span class="Apple-converted-space">  </span>let currentPin = "";<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">  </span>let html5QrcodeScanner = null;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let selectedStudent = null;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const canvas = document.getElementById('signature-pad');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const ctx = canvas.getContext('2d');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let isDrawing = false;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ================= 核心：API 呼叫中心 =================</p>
-<p class="p1"><span class="Apple-converted-space">  </span>async function apiCall(action, data = {}) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const response = await fetch(GAS_API_URL, {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>method: 'POST',</p>
-<p class="p1"><span class="Apple-converted-space">        </span>headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // 避開瀏覽器 CORS 攔截</p>
-<p class="p1"><span class="Apple-converted-space">        </span>body: JSON.stringify({ action: action, pin: currentPin, ...data })</p>
-<p class="p1"><span class="Apple-converted-space">      </span>});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const result = await response.json();</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (!result.success &amp;&amp; result.message.includes("PIN")) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>alert("🔒 登入逾時或密碼錯誤，請重新登入！");</p>
-<p class="p1"><span class="Apple-converted-space">        </span>location.reload();</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return result;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>} catch (err) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>alert("連線到資料庫失敗，請檢查網路連線。");</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return { success: false, message: "連線失敗" };</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ================= 登入驗證 =================</p>
-<p class="p1"><span class="Apple-converted-space">  </span>async function verifyPin() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const pin = document.getElementById('pin-input').value;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(!pin) return;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('login-msg').innerText = "驗證中，請稍候...";</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>currentPin = pin; // 暫存密碼</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const res = await apiCall('verifyPin');</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (res.success) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('login-screen').style.display = "none";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('app-container').style.display = "block";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('login-msg').innerText = res.message;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>currentPin = "";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ================= 頁面切換 =================</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function switchTab(tab) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>stopScanner();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>['sign', 'list', 'report'].forEach(t =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('tab-' + t).classList.remove('active');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('section-' + t).classList.remove('active');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('tab-' + tab).classList.add('active');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('section-' + tab).classList.add('active');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ================= 獨立版相機掃描 (保證不破圖/不擋權限) =================</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function startScanner() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('start-scan-btn').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('qr-reader-container').style.display = 'block';</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (!html5QrcodeScanner) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: { width: 250, height: 250 } }, false);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>html5QrcodeScanner.render(onScanSuccess, (err)=&gt;{});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>function stopScanner() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (html5QrcodeScanner) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>html5QrcodeScanner.clear();</p>
-<p class="p1"><span class="Apple-converted-space">      </span>html5QrcodeScanner = null;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('qr-reader-container').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('start-scan-btn').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>async function onScanSuccess(decodedText) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>stopScanner();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('search-results').innerHTML = "&lt;div style='color:#0284c7; text-align:center;'&gt;🔄 掃描成功！資料比對中...&lt;/div&gt;";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const qrData = JSON.parse(decodedText);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (qrData._membrId) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const res = await apiCall('searchMembrId', { membrId: qrData._membrId });</p>
-<p class="p1"><span class="Apple-converted-space">        </span>showResults(res.data);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>} catch(e) { alert("⚠️ 無效的 QR Code 格式"); document.getElementById('search-results').innerHTML = ""; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ================= 查詢與結果顯示 =================</p>
-<p class="p1"><span class="Apple-converted-space">  </span>async function search() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const keyword = document.getElementById('keyword').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (!keyword) return alert("請輸入關鍵字");</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('keyword').blur();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('search-results').innerHTML = "&lt;div style='color:#94a3b8; text-align:center;'&gt;🔍 查詢中...&lt;/div&gt;";</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>const res = await apiCall('search', { keyword: keyword });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(res.success) showResults(res.data);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>function showResults(results) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const container = document.getElementById('search-results');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (!results || results.length === 0) return container.innerHTML = "&lt;div style='color:#e11d48; text-align:center;'&gt;找不到符合的學童&lt;/div&gt;";</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (results.length === 1 &amp;&amp; document.getElementById('keyword').value === "") {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return selectStudent(JSON.stringify(results[0]));</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>let html = "";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>results.forEach(s =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>html += `&lt;div class="result-card" onclick="selectStudent('${JSON.stringify(s).replace(/"/g, '&amp;quot;')}')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>&lt;div&gt;${s.className} - &lt;span style="color:#0284c7; font-size:22px;"&gt;${s.name}&lt;/span&gt;&lt;div class="result-sub"&gt;學號: ${s.studentId}&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>&lt;div&gt;❯&lt;/div&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>container.innerHTML = html;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ================= 畫布簽名與提交 =================</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function selectStudent(studentJson) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>selectedStudent = JSON.parse(studentJson);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('step-search').style.display = "none";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('step-signature').style.display = "block";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('display-name').innerText = `${selectedStudent.className} - ${selectedStudent.name}`;</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>const now = new Date();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('display-time').innerText = `時間：${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(resizeCanvas, 100); // 確保畫面渲染後再抓尺寸</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>function backToSearch() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>selectedStudent = null;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('step-search').style.display = "block";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('step-signature').style.display = "none";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('keyword').value = "";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('search-results').innerHTML = "";</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>function resizeCanvas() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const ratio = Math.max(window.devicePixelRatio || 1, 1);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>canvas.width = canvas.offsetWidth * ratio;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>canvas.height = canvas.offsetHeight * ratio;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>ctx.scale(ratio, ratio);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>clearCanvas();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function getPos(e) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const rect = canvas.getBoundingClientRect();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const clientX = e.clientX || (e.touches &amp;&amp; e.touches[0].clientX);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const clientY = e.clientY || (e.touches &amp;&amp; e.touches[0].clientY);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>return { x: clientX - rect.left, y: clientY - rect.top };</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function startDrawing(e) { e.preventDefault(); isDrawing = true; ctx.beginPath(); ctx.moveTo(getPos(e).x, getPos(e).y); ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.strokeStyle = "#1e293b"; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function draw(e) { if (!isDrawing) return; e.preventDefault(); ctx.lineTo(getPos(e).x, getPos(e).y); ctx.stroke(); }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>function stopDrawing(e) { if(e) e.preventDefault(); isDrawing = false; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>canvas.addEventListener('mousedown', startDrawing); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDrawing); canvas.addEventListener('mouseout', stopDrawing);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>canvas.addEventListener('touchstart', startDrawing, {passive: false}); canvas.addEventListener('touchmove', draw, {passive: false}); canvas.addEventListener('touchend', stopDrawing);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>async function submitSignature() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const blank = document.createElement('canvas'); blank.width = canvas.width; blank.height = canvas.height;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (canvas.toDataURL() === blank.toDataURL()) return alert("⚠️ 請家長先在方框內簽名！");</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>const base64Image = canvas.toDataURL('image/png');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const btn = document.getElementById('submit-btn');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.innerHTML = "⏳ 儲存中..."; btn.disabled = true;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>const res = await apiCall('save', { studentData: selectedStudent, base64Image: base64Image });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>alert(res.message);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(res.success) backToSearch();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>btn.innerHTML = "✅ 確認簽名送出"; btn.disabled = false;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// ================= 清單與報表 =================</p>
-<p class="p1"><span class="Apple-converted-space">  </span>async function fetchRecentRecords() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('list-content').innerHTML = "&lt;div style='padding:20px; text-align:center;'&gt;載入中...&lt;/div&gt;";</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const res = await apiCall('recent');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(res.success) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (res.data.length === 0) return document.getElementById('list-content').innerHTML = "&lt;div style='padding:20px; text-align:center;'&gt;無紀錄。&lt;/div&gt;";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>let html = `&lt;table&gt;&lt;tr&gt;&lt;th&gt;時間&lt;/th&gt;&lt;th&gt;班級&lt;/th&gt;&lt;th&gt;姓名&lt;/th&gt;&lt;th&gt;簽名&lt;/th&gt;&lt;/tr&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>res.data.forEach(r =&gt; { html += `&lt;tr&gt;&lt;td&gt;${r.datetime}&lt;/td&gt;&lt;td&gt;${r.className}&lt;/td&gt;&lt;td&gt;${r.name}&lt;/td&gt;&lt;td&gt;&lt;img src="${r.imgUrl}" class="sign-img"&gt;&lt;/td&gt;&lt;/tr&gt;`; });</p>
-<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('list-content').innerHTML = html + `&lt;/table&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('report-date').valueAsDate = new Date();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>async function fetchReport() {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const targetDate = document.getElementById('report-date').value;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if (!targetDate) return alert("請選擇日期");</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('report-content').innerHTML = "&lt;div style='padding:20px; text-align:center;'&gt;報表產生中...&lt;/div&gt;";</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>const res = await apiCall('report', { targetDate: targetDate });</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(res.success) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (res.data.length === 0) return document.getElementById('report-content').innerHTML = "&lt;div style='padding:20px; text-align:center;'&gt;這天沒有紀錄。&lt;/div&gt;";</p>
-<p class="p1"><span class="Apple-converted-space">      </span>let html = `&lt;button class="btn btn-secondary" style="margin-bottom:15px;" onclick="window.print()"&gt;🖨️ 列印此頁&lt;/button&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>html += `&lt;h2 style="text-align:center;"&gt;超時接回清冊 (${targetDate})&lt;/h2&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>html += `&lt;div class="table-responsive"&gt;&lt;table&gt;&lt;tr&gt;&lt;th&gt;時間&lt;/th&gt;&lt;th&gt;班級&lt;/th&gt;&lt;th&gt;學號&lt;/th&gt;&lt;th&gt;姓名&lt;/th&gt;&lt;th&gt;簽名&lt;/th&gt;&lt;/tr&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>res.data.forEach(r =&gt; { html += `&lt;tr&gt;&lt;td&gt;${r.time}&lt;/td&gt;&lt;td&gt;${r.className}&lt;/td&gt;&lt;td&gt;${r.studentId}&lt;/td&gt;&lt;td&gt;${r.name}&lt;/td&gt;&lt;td&gt;&lt;img src="${r.imgUrl}" class="sign-img"&gt;&lt;/td&gt;&lt;/tr&gt;`; });</p>
-<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('report-content').innerHTML = html + `&lt;/table&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+
+<!-- 🔒 登入防護畫面 -->
+<div id="login-screen">
+  <h2>🔒 系統已鎖定</h2>
+  <p style="color:#7f8c8d; margin-bottom:20px;">請輸入教師通關密碼</p>
+  <input type="password" id="pin-input" placeholder="****" inputmode="numeric" maxlength="4" onkeypress="if(event.key === 'Enter') verifyPin()">
+  <button class="btn btn-primary" onclick="verifyPin()">解鎖系統</button>
+  <div id="login-msg" style="color:#e74c3c; margin-top:15px; font-weight:bold;"></div>
+</div>
+
+<!-- 📱 系統主畫面 (登入後才會顯示) -->
+<div class="container" id="app-container">
+  <h1>🕒 超時保育管理系統</h1>
+  
+  <div class="nav">
+    <button id="tab-sign" class="active" onclick="switchTab('sign')">📝 家長簽名</button>
+    <button id="tab-list" onclick="switchTab('list'); fetchRecentRecords();">📋 近期清單</button>
+    <button id="tab-report" onclick="switchTab('report')">🖨️ 列印報表</button>
+  </div>
+
+  <div id="section-sign" class="section active">
+    <div id="step-search">
+      <label class="form-label">📷 即時相機掃描 QR Code</label>
+      <button id="start-scan-btn" class="btn btn-purple" onclick="startScanner()">📷 啟動掃描鏡頭</button>
+      
+      <div id="qr-reader-container">
+        <div id="reader"></div>
+        <button class="btn btn-secondary" style="margin-top:15px;" onclick="stopScanner()">❌ 關閉相機</button>
+      </div>
+
+      <div style="text-align:center; margin: 25px 0; color: #94a3b8; font-weight:bold;">--- 或手動輸入 ---</div>
+      <label class="form-label">🔍 查詢學童 (可輸入學號、姓名)</label>
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="keyword" placeholder="輸入後按 Enter..." onkeypress="if(event.key === 'Enter') search()" style="margin-bottom:0;">
+        <button class="btn btn-primary" style="width: 100px;" onclick="search()">查詢</button>
+      </div>
+      <div id="search-results" style="margin-top: 20px;"></div>
+    </div>
+
+    <div id="step-signature" style="display:none;">
+      <div class="info-card">
+        <div class="name" id="display-name"></div>
+        <div class="time" id="display-time"></div>
+      </div>
+      <div class="canvas-container">
+        <div class="canvas-hint">請在此框內簽名...</div>
+        <canvas id="signature-pad"></canvas>
+      </div>
+      <button class="btn btn-primary" id="submit-btn" onclick="submitSignature()">✅ 確認簽名送出</button>
+      <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <button class="btn btn-secondary" style="width:50%" onclick="clearCanvas()">🗑️ 清除重簽</button>
+        <button class="btn btn-secondary" style="width:50%" onclick="backToSearch()">返回上一步</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="section-list" class="section">
+    <button class="btn btn-secondary" style="margin-bottom: 15px;" onclick="fetchRecentRecords()">🔄 重新整理</button>
+    <div class="table-responsive" id="list-content">資料載入中...</div>
+  </div>
+
+  <div id="section-report" class="section">
+    <input type="date" id="report-date" style="margin-bottom: 10px;">
+    <button class="btn btn-primary" style="margin-bottom: 20px;" onclick="fetchReport()">產生報表</button>
+    <div id="report-content"></div>
+  </div>
+</div>
+
+<script>
+  // ⚠️【非常重要】請將這裡替換成您剛剛部署 GAS 產生的「網頁應用程式網址」
+  const GAS_API_URL = "https://script.google.com/macros/s/AKfycbz_XXXXXXXXXXXX/exec";
+  
+  let currentPin = ""; 
+  let html5QrcodeScanner = null;
+  let selectedStudent = null;
+  const canvas = document.getElementById('signature-pad');
+  const ctx = canvas.getContext('2d');
+  let isDrawing = false;
+
+  // ================= 核心：API 呼叫中心 =================
+  async function apiCall(action, data = {}) {
+    try {
+      const response = await fetch(GAS_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // 避開瀏覽器 CORS 攔截
+        body: JSON.stringify({ action: action, pin: currentPin, ...data })
+      });
+      const result = await response.json();
+      if (!result.success && result.message.includes("PIN")) {
+        alert("🔒 登入逾時或密碼錯誤，請重新登入！");
+        location.reload();
+      }
+      return result;
+    } catch (err) {
+      alert("連線到資料庫失敗，請檢查網路連線。");
+      return { success: false, message: "連線失敗" };
+    }
+  }
+
+  // ================= 登入驗證 =================
+  async function verifyPin() {
+    const pin = document.getElementById('pin-input').value;
+    if(!pin) return;
+    document.getElementById('login-msg').innerText = "驗證中，請稍候...";
+    
+    currentPin = pin; // 暫存密碼
+    const res = await apiCall('verifyPin');
+    
+    if (res.success) {
+      document.getElementById('login-screen').style.display = "none";
+      document.getElementById('app-container').style.display = "block";
+    } else {
+      document.getElementById('login-msg').innerText = res.message;
+      currentPin = "";
+    }
+  }
+
+  // ================= 頁面切換 =================
+  function switchTab(tab) {
+    stopScanner();
+    ['sign', 'list', 'report'].forEach(t => {
+      document.getElementById('tab-' + t).classList.remove('active');
+      document.getElementById('section-' + t).classList.remove('active');
+    });
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('section-' + tab).classList.add('active');
+  }
+
+  // ================= 獨立版相機掃描 (保證不破圖/不擋權限) =================
+  function startScanner() {
+    document.getElementById('start-scan-btn').style.display = 'none';
+    document.getElementById('qr-reader-container').style.display = 'block';
+    
+    if (!html5QrcodeScanner) {
+      html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: { width: 250, height: 250 } }, false);
+      html5QrcodeScanner.render(onScanSuccess, (err)=>{});
+    }
+  }
+
+  function stopScanner() {
+    if (html5QrcodeScanner) {
+      html5QrcodeScanner.clear();
+      html5QrcodeScanner = null;
+    }
+    document.getElementById('qr-reader-container').style.display = 'none';
+    document.getElementById('start-scan-btn').style.display = 'block';
+  }
+
+  async function onScanSuccess(decodedText) {
+    stopScanner();
+    document.getElementById('search-results').innerHTML = "<div style='color:#0284c7; text-align:center;'>🔄 掃描成功！資料比對中...</div>";
+    try {
+      const qrData = JSON.parse(decodedText);
+      if (qrData._membrId) {
+        const res = await apiCall('searchMembrId', { membrId: qrData._membrId });
+        showResults(res.data);
+      }
+    } catch(e) { alert("⚠️ 無效的 QR Code 格式"); document.getElementById('search-results').innerHTML = ""; }
+  }
+
+  // ================= 查詢與結果顯示 =================
+  async function search() {
+    const keyword = document.getElementById('keyword').value.trim();
+    if (!keyword) return alert("請輸入關鍵字");
+    document.getElementById('keyword').blur();
+    document.getElementById('search-results').innerHTML = "<div style='color:#94a3b8; text-align:center;'>🔍 查詢中...</div>";
+    
+    const res = await apiCall('search', { keyword: keyword });
+    if(res.success) showResults(res.data);
+  }
+
+  function showResults(results) {
+    const container = document.getElementById('search-results');
+    if (!results || results.length === 0) return container.innerHTML = "<div style='color:#e11d48; text-align:center;'>找不到符合的學童</div>";
+    
+    if (results.length === 1 && document.getElementById('keyword').value === "") {
+      return selectStudent(JSON.stringify(results[0]));
+    }
+    
+    let html = "";
+    results.forEach(s => {
+      html += `<div class="result-card" onclick="selectStudent('${JSON.stringify(s).replace(/"/g, '&quot;')}')">
+                 <div>${s.className} - <span style="color:#0284c7; font-size:22px;">${s.name}</span><div class="result-sub">學號: ${s.studentId}</div></div>
+                 <div>❯</div></div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  // ================= 畫布簽名與提交 =================
+  function selectStudent(studentJson) {
+    selectedStudent = JSON.parse(studentJson);
+    document.getElementById('step-search').style.display = "none";
+    document.getElementById('step-signature').style.display = "block";
+    document.getElementById('display-name').innerText = `${selectedStudent.className} - ${selectedStudent.name}`;
+    
+    const now = new Date();
+    document.getElementById('display-time').innerText = `時間：${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    setTimeout(resizeCanvas, 100); // 確保畫面渲染後再抓尺寸
+  }
+
+  function backToSearch() {
+    selectedStudent = null;
+    document.getElementById('step-search').style.display = "block";
+    document.getElementById('step-signature').style.display = "none";
+    document.getElementById('keyword').value = "";
+    document.getElementById('search-results').innerHTML = "";
+  }
+
+  function resizeCanvas() {
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    canvas.width = canvas.offsetWidth * ratio;
+    canvas.height = canvas.offsetHeight * ratio;
+    ctx.scale(ratio, ratio);
+    clearCanvas();
+  }
+  function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
+  function startDrawing(e) { e.preventDefault(); isDrawing = true; ctx.beginPath(); ctx.moveTo(getPos(e).x, getPos(e).y); ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.strokeStyle = "#1e293b"; }
+  function draw(e) { if (!isDrawing) return; e.preventDefault(); ctx.lineTo(getPos(e).x, getPos(e).y); ctx.stroke(); }
+  function stopDrawing(e) { if(e) e.preventDefault(); isDrawing = false; }
+  canvas.addEventListener('mousedown', startDrawing); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDrawing); canvas.addEventListener('mouseout', stopDrawing);
+  canvas.addEventListener('touchstart', startDrawing, {passive: false}); canvas.addEventListener('touchmove', draw, {passive: false}); canvas.addEventListener('touchend', stopDrawing);
+
+  async function submitSignature() {
+    const blank = document.createElement('canvas'); blank.width = canvas.width; blank.height = canvas.height;
+    if (canvas.toDataURL() === blank.toDataURL()) return alert("⚠️ 請家長先在方框內簽名！");
+
+    const base64Image = canvas.toDataURL('image/png');
+    const btn = document.getElementById('submit-btn');
+    btn.innerHTML = "⏳ 儲存中..."; btn.disabled = true;
+
+    const res = await apiCall('save', { studentData: selectedStudent, base64Image: base64Image });
+    alert(res.message);
+    if(res.success) backToSearch();
+    btn.innerHTML = "✅ 確認簽名送出"; btn.disabled = false;
+  }
+
+  // ================= 清單與報表 =================
+  async function fetchRecentRecords() {
+    document.getElementById('list-content').innerHTML = "<div style='padding:20px; text-align:center;'>載入中...</div>";
+    const res = await apiCall('recent');
+    if(res.success) {
+      if (res.data.length === 0) return document.getElementById('list-content').innerHTML = "<div style='padding:20px; text-align:center;'>無紀錄。</div>";
+      let html = `<table><tr><th>時間</th><th>班級</th><th>姓名</th><th>簽名</th></tr>`;
+      res.data.forEach(r => { html += `<tr><td>${r.datetime}</td><td>${r.className}</td><td>${r.name}</td><td><img src="${r.imgUrl}" class="sign-img"></td></tr>`; });
+      document.getElementById('list-content').innerHTML = html + `</table>`;
+    }
+  }
+
+  document.getElementById('report-date').valueAsDate = new Date();
+  async function fetchReport() {
+    const targetDate = document.getElementById('report-date').value;
+    if (!targetDate) return alert("請選擇日期");
+    document.getElementById('report-content').innerHTML = "<div style='padding:20px; text-align:center;'>報表產生中...</div>";
+    
+    const res = await apiCall('report', { targetDate: targetDate });
+    if(res.success) {
+      if (res.data.length === 0) return document.getElementById('report-content').innerHTML = "<div style='padding:20px; text-align:center;'>這天沒有紀錄。</div>";
+      let html = `<button class="btn btn-secondary" style="margin-bottom:15px;" onclick="window.print()">🖨️ 列印此頁</button>`;
+      html += `<h2 style="text-align:center;">超時接回清冊 (${targetDate})</h2>`;
+      html += `<div class="table-responsive"><table><tr><th>時間</th><th>班級</th><th>學號</th><th>姓名</th><th>簽名</th></tr>`;
+      res.data.forEach(r => { html += `<tr><td>${r.time}</td><td>${r.className}</td><td>${r.studentId}</td><td>${r.name}</td><td><img src="${r.imgUrl}" class="sign-img"></td></tr>`; });
+      document.getElementById('report-content').innerHTML = html + `</table></div>`;
+    }
+  }
+</script>
 </body>
 </html>
