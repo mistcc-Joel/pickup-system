@@ -190,7 +190,16 @@
     document.getElementById('qr-reader-container').style.display = 'block';
     
     if (!html5QrcodeScanner) {
-      html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: { width: 250, height: 250 } }, false);
+      // 🌟 調整掃描設定：放大掃描框，並支援全畫面快速辨識
+      html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+        fps: 20,                          // 提高每秒偵測格數，反應更靈敏
+        qrbox: { width: 320, height: 320 }, // 放大掃描框尺寸 (原本通常是 250x250)
+        aspectRatio: 1.0,
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true // 啟用瀏覽器原生加速辨識，大幅提升對準速度
+        }
+      }, false);
+      
       html5QrcodeScanner.render(onScanSuccess, (err)=>{});
     }
   }
