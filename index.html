@@ -60,7 +60,7 @@
 <div id="login-screen">
   <h2>🔒 系統已鎖定</h2>
   <p style="color:#7f8c8d; margin-bottom:20px;">請輸入教師通關密碼</p>
-  <input type="password" id="pin-input" placeholder="****" inputmode="numeric" maxlength="4" onkeypress="if(event.key === 'Enter') verifyPin()">
+  <input type="text" id="pin-input" placeholder="請輸入密碼" autocomplete="off" oninput="handlePinInput(event)" onkeypress="if(event.key === 'Enter') verifyPin()" style="font-size: 24px; text-align: center; letter-spacing: 3px;">
   <button class="btn btn-primary" onclick="verifyPin()">解鎖系統</button>
   <div id="login-msg" style="color:#e74c3c; margin-top:15px; font-weight:bold;"></div>
 </div>
@@ -362,6 +362,65 @@
       document.getElementById('report-content').innerHTML = html + `</table></div>`;
     }
   }
+
+// 🌟 密碼 1 秒後自動轉為 * 的特效邏輯
+  let realPinValue = ""; // 用來在背景默默儲存老師真正打的字
+  let hideTimeouts = {}; // 用來追蹤每個字元的計時器
+
+  function handlePinInput(e) {
+    const inputField = document.getElementById('pin-input');
+    const val = inputField.value;
+    
+    // 判斷使用者是新增字元還是刪除字元
+    if (val.length > realPinValue.length) {
+      // 取得剛才最新輸入的那一個字元
+      const newChar = val[val.length - 1];
+      realPinValue += newChar; // 把真實字元存進背景變數
+      
+      const indexToHide = realPinValue.length - 1;
+      
+      // ⏱️ 關鍵特效：設定 1 秒後將該位置的字元變成 *
+      hideTimeouts[indexToHide] = setTimeout(() => {
+        let masked = "";
+        for (let i = 0; i < realPinValue.length; i++) {
+          if (i <= indexToHide) {
+            masked += "•"; // 變成黑點 (或 * )
+          } else {
+            masked += realPinValue[i];
+          }
+        }
+        inputField.value = masked;
+      }, 1000); // 1000 毫秒 = 1 秒
+      
+    } else if (val.length < realPinValue.length) {
+      // 如果老師按了退格鍵 (Backspace) 刪除字元
+      realPinValue = realPinValue.substring(0, val.length);
+      // 清除所有殘留的計時器
+      Object.values(hideTimeouts).forEach(t => clearTimeout(t));
+      hideTimeouts = {};
+    }
+  }
+
+  // 修改原本的 verifyPin 函數，讓它去抓取背景中「真正的密碼」來驗證
+  async function verifyPin() {
+    const pin = realPinValue; // 抓取真實密碼
+    if(!pin) return;
+    document.getElementById('login-msg').innerText = "驗證中，請稍候...";
+    
+    currentPin = pin;
+    const res = await apiCall('verifyPin');
+    
+    if (res.success) {
+      document.getElementById('login-screen').style.display = "none";
+      document.getElementById('app-container').style.display = "block";
+    } else {
+      document.getElementById('login-msg').innerText = res.message;
+      currentPin = "";
+      realPinValue = "";
+      document.getElementById('pin-input').value = "";
+    }
+  }
+  
 </script>
 </body>
 </html>
