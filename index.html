@@ -11,7 +11,6 @@
     .container { max-width: 700px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); display: none; }
     h1 { text-align: center; color: #2c3e50; font-size: 26px; margin-top: 0; margin-bottom: 25px;}
     
-    /* 登入畫面專屬 */
     #login-screen { max-width: 400px; margin: 50px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: center; }
     #login-screen h2 { color: #2c3e50; margin-bottom: 20px; }
     #pin-input { width: 100%; padding: 15px; font-size: 24px; text-align: center; letter-spacing: 5px; margin-bottom: 20px; border: 2px solid #cbd5e1; border-radius: 8px; }
@@ -53,7 +52,6 @@
 </head>
 <body>
 
-<!-- 🔒 登入防護畫面 -->
 <div id="login-screen">
   <h2>🔒 系統已鎖定</h2>
   <p style="color:#7f8c8d; margin-bottom:20px;">請輸入教師通關密碼</p>
@@ -62,7 +60,6 @@
   <div id="login-msg" style="color:#e74c3c; margin-top:15px; font-weight:bold;"></div>
 </div>
 
-<!-- 📱 系統主畫面 (登入後才會顯示) -->
 <div class="container" id="app-container">
   <h1>🕒 超時保育管理系統</h1>
   
@@ -121,7 +118,7 @@
 </div>
 
 <script>
-  // ⚠️【非常重要】請將這裡替換成您剛剛部署 GAS 產生的「網頁應用程式網址」
+  // ⚠️ 貼上程式碼後，請把下方這段網址換成您的 GAS 網頁應用程式網址！
   const GAS_API_URL = "https://script.google.com/macros/s/AKfycbz_XXXXXXXXXXXX/exec";
   
   let currentPin = ""; 
@@ -131,12 +128,11 @@
   const ctx = canvas.getContext('2d');
   let isDrawing = false;
 
-  // ================= 核心：API 呼叫中心 =================
   async function apiCall(action, data = {}) {
     try {
       const response = await fetch(GAS_API_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // 避開瀏覽器 CORS 攔截
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
         body: JSON.stringify({ action: action, pin: currentPin, ...data })
       });
       const result = await response.json();
@@ -151,13 +147,12 @@
     }
   }
 
-  // ================= 登入驗證 =================
   async function verifyPin() {
     const pin = document.getElementById('pin-input').value;
     if(!pin) return;
     document.getElementById('login-msg').innerText = "驗證中，請稍候...";
     
-    currentPin = pin; // 暫存密碼
+    currentPin = pin;
     const res = await apiCall('verifyPin');
     
     if (res.success) {
@@ -169,7 +164,6 @@
     }
   }
 
-  // ================= 頁面切換 =================
   function switchTab(tab) {
     stopScanner();
     ['sign', 'list', 'report'].forEach(t => {
@@ -180,7 +174,6 @@
     document.getElementById('section-' + tab).classList.add('active');
   }
 
-  // ================= 獨立版相機掃描 (保證不破圖/不擋權限) =================
   function startScanner() {
     document.getElementById('start-scan-btn').style.display = 'none';
     document.getElementById('qr-reader-container').style.display = 'block';
@@ -212,7 +205,6 @@
     } catch(e) { alert("⚠️ 無效的 QR Code 格式"); document.getElementById('search-results').innerHTML = ""; }
   }
 
-  // ================= 查詢與結果顯示 =================
   async function search() {
     const keyword = document.getElementById('keyword').value.trim();
     if (!keyword) return alert("請輸入關鍵字");
@@ -240,7 +232,6 @@
     container.innerHTML = html;
   }
 
-  // ================= 畫布簽名與提交 =================
   function selectStudent(studentJson) {
     selectedStudent = JSON.parse(studentJson);
     document.getElementById('step-search').style.display = "none";
@@ -249,7 +240,7 @@
     
     const now = new Date();
     document.getElementById('display-time').innerText = `時間：${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    setTimeout(resizeCanvas, 100); // 確保畫面渲染後再抓尺寸
+    setTimeout(resizeCanvas, 100); 
   }
 
   function backToSearch() {
@@ -294,7 +285,6 @@
     btn.innerHTML = "✅ 確認簽名送出"; btn.disabled = false;
   }
 
-  // ================= 清單與報表 =================
   async function fetchRecentRecords() {
     document.getElementById('list-content').innerHTML = "<div style='padding:20px; text-align:center;'>載入中...</div>";
     const res = await apiCall('recent');
